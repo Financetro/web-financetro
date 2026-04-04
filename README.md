@@ -76,25 +76,8 @@ Financetro is designed with a **Premium Dark Glassmorphism** aesthetic.
 
 _Copy these to your `.env.local` for local development or React Native implementation._
 
-### **Firebase Config**
 
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDzvVYmzkaB4jSW1uFg3z1-5pznlhMBAik
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=financetro.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://financetro-default-rtdb.firebaseio.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=financetro
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=financetro.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=662862194800
-NEXT_PUBLIC_FIREBASE_APP_ID=1:662862194800:web:becdcf1b579dc0ad7d6cb5
-```
 
-### **ExchangeRate-API**
-
-```env
-NEXT_PUBLIC_EXCHANGE_RATE_API_KEY=c420d2d7cb5754112a15f4ea
-```
-
----
 
 ## 📱 Mobile App Scope (React Native Suggestions)
 

@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0B0F14;
+  --color-foreground: #F3F4F6;
+  
+  --color-primary: #10B981;
+  --color-primary-foreground: #ffffff;
+  --color-primary-hover: #059669;
+
+  --color-card: #141A21;
+  --color-card-hover: #1A222B;
+  --color-card-foreground: #F3F4F6;
+  
+  --color-border: #1E293B;
+  --color-input: #1E293B;
+
+  --color-muted: #1E293B;
+  --color-muted-foreground: #94A3B8;
+
+  --color-accent: #1E293B;
+  --color-accent-foreground: #F3F4F6;
+
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #f8fafc;
+
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom utilities */
+@layer utilities {
+  .glass {
+    @apply bg-card/60 backdrop-blur-xl border border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+  }
+}
