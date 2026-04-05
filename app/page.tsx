@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
   BarChart3,
@@ -14,414 +17,578 @@ import {
   Target,
   TrendingUp,
   Layout,
+  ChevronRight,
+  CreditCard,
+  Lock,
+  Sparkles,
+  Command,
+  LineChart
 } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.7,
+      ease: "easeOut" as const,
+    },
+  }),
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 
 export default function LandingPage() {
   const currentYear = new Date().getFullYear();
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const yOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const yParallax = useTransform(scrollYProgress, [0, 1], [0, 200]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-white selection:bg-primary/30">
-      {/* Navbar */}
-      <header className="px-6 lg:px-20 h-20 flex items-center justify-between border-b border-white/5 backdrop-blur-xl sticky top-0 z-100 bg-background/80">
-        <Link className="flex items-center gap-2" href="/">
-          <div className="p-2 bg-primary/20 rounded-xl">
-            <Wallet className="h-6 w-6 text-primary" />
-          </div>
-          <span className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-primary to-orange-400">
-            Financetro
-          </span>
-        </Link>
-        <nav className="hidden md:flex ml-auto gap-8 mr-10">
-          <Link
-            href="#features"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-          >
-            Features
+    <div className="flex flex-col min-h-screen bg-[#06080C] text-white selection:bswg-primary/30 overflow-hidden font-sans">
+      {/* Background Ambience */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[150px] rounded-full mix-blend-screen opacity-50" />
+        <div className="absolute top-[40%] right-[-10%] w-[30%] h-[50%] bg-blue-600/10 blur-[150px] rounded-full mix-blend-screen opacity-50" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[40%] bg-emerald-900/20 blur-[150px] rounded-full mix-blend-screen opacity-50" />
+      </div>
+
+      {/* Navbar overlaying with glassmorphism */}
+      <header className="px-6 lg:px-12 h-24 flex items-center justify-between border-b border-white/5 backdrop-blur-2xl sticky top-0 z-50 bg-[#06080C]/70">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Link className="flex items-center gap-3 group" href="/">
+            <div className="relative p-2.5 bg-white/5 rounded-xl border border-white/10 group-hover:border-primary/50 transition-colors shadow-lg shadow-primary/5">
+              <div className="absolute inset-0 bg-primary/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Command className="h-6 w-6 text-primary relative z-10" />
+            </div>
+            <span className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
+              Financetro
+            </span>
           </Link>
-          <Link
-            href="#analytics"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-          >
-            Analytics
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-          >
-            Pricing
-          </Link>
-        </nav>
-        <div className="flex gap-4">
-          <Link href="/login">
+        </motion.div>
+
+        <motion.nav
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="hidden md:flex ml-auto gap-8 mr-12 bg-white/5 px-8 py-3 rounded-full border border-white/5 backdrop-blur-lg shadow-xl"
+        >
+          {["Features", "Analytics", "Security", "Pricing"].map((item) => (
+            <Link
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="text-sm font-medium text-white/60 hover:text-white transition-colors relative group"
+            >
+              {item}
+              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full rounded-full" />
+            </Link>
+          ))}
+        </motion.nav>
+
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex gap-4"
+        >
+          <Link href="/login" passHref>
             <Button
               variant="ghost"
-              className="text-sm font-semibold hover:bg-white/5 px-6"
+              className="text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 px-6 h-11 rounded-full hidden sm:inline-flex"
             >
               Log in
             </Button>
           </Link>
-          <Link href="/register">
-            <Button className="text-sm font-bold px-6 shadow-lg shadow-primary/20 hover:scale-105 transition-transform active:scale-95">
+          <Link href="/register" passHref>
+            <Button className="text-sm font-bold px-7 h-11 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all hover:scale-105 active:scale-95">
               Get Started
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         {/* Hero Section */}
-        <section className="relative w-full pt-20 pb-20 md:pt-32 md:pb-40 overflow-hidden">
-          {/* Animated Background Elements */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/20 blur-[120px] rounded-full -z-10 opacity-30" />
-          <div className="absolute top-40 -left-20 w-[400px] h-[400px] bg-blue-500/10 blur-[100px] rounded-full -z-10 animate-pulse" />
+        <section ref={heroRef} className="relative w-full pt-32 pb-40 md:pt-48 md:pb-56 overflow-hidden flex flex-col items-center justify-center min-h-[90vh]">
+          <motion.div
+            style={{ opacity: yOpacity, y: yParallax }}
+            className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center space-y-10"
+          >
+            <motion.div
+              custom={0} initial="hidden" animate="visible" variants={fadeIn}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 bg-primary/10 text-sm font-medium text-primary backdrop-blur-sm shadow-[0_0_20px_rgba(16,185,129,0.15)] group cursor-pointer"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>Financetro 2.0 is now live</span>
+              <ChevronRight className="h-4 w-4 opacity-50 group-hover:translate-x-1 group-hover:opacity-100 transition-all" />
+            </motion.div>
 
-          <div className="container mx-auto px-6 relative z-10">
-            <div className="flex flex-col items-center text-center space-y-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs font-semibold text-primary animate-bounce">
-                <span className="p-1 rounded-full bg-primary animate-ping inline-block" />
-                Trusted by 50,000+ professionals
-              </div>
+            <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn} className="space-y-6 max-w-[1000px]">
+              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.9] text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40 pb-4">
+                MASTER YOUR <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-cyan-400">
+                  WEALTH
+                </span>
+              </h1>
+              <p className="mx-auto max-w-[700px] text-white/50 text-xl md:text-2xl font-light leading-relaxed">
+                The most powerful, beautiful, and secure financial dashboard ever created. Track your cashflow with surgical precision.
+              </p>
+            </motion.div>
 
-              <div className="space-y-6 max-w-4xl">
-                <h1 className="text-5xl font-black tracking-tight sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] text-white">
-                  OWN YOUR{" "}
-                  <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-green-300">
-                    FINANCIAL
-                  </span>{" "}
-                  DESTINY
-                </h1>
-                <p className="mx-auto max-w-[800px] text-muted-foreground text-lg md:text-xl lg:text-2xl font-medium leading-relaxed">
-                  The ultimate dashboard to monitor wealth, track recurring
-                  bills, and hit savings goals with surgical precision.
-                </p>
-              </div>
+            <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn} className="flex flex-col sm:flex-row gap-5 pt-8">
+              <Link href="/register" passHref>
+                <Button
+                  size="lg"
+                  className="h-16 px-10 text-lg font-semibold rounded-full group bg-white text-black hover:bg-white/90 transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+                >
+                  Start Building Free
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <Link href="#demo" passHref>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-16 px-10 text-lg font-semibold border-white/10 bg-white/5 backdrop-blur-xl rounded-full hover:bg-white/10 transition-all text-white/80"
+                >
+                  View Live Demo
+                </Button>
+              </Link>
+            </motion.div>
 
-              <div className="flex flex-col sm:flex-row gap-5">
-                <Link href="/register">
-                  <Button
-                    size="lg"
-                    className="h-14 px-10 text-lg font-bold rounded-2xl group"
-                  >
-                    Build My Portfolio
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </Link>
-                <Link href="#demo">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-14 px-10 text-lg font-semibold border-white/10 bg-white/5 backdrop-blur-md rounded-2xl"
-                  >
-                    Watch Demo
-                  </Button>
-                </Link>
-              </div>
+          </motion.div>
 
-              {/* Main Dashboard Mockup Image */}
-              <div className="w-full max-w-6xl mt-16 rounded-3xl border border-white/10 bg-card/30 backdrop-blur-2xl p-2 shadow-2xl relative overflow-hidden group">
-                <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent z-10" />
+          {/* Floating UI Elements Mockup */}
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
+            className="w-full max-w-[1200px] mx-auto mt-20 relative px-6 lg:px-0"
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-[#06080C] via-transparent to-transparent z-20 h-full w-full pointer-events-none" />
+
+            <div className="relative rounded-3xl border border-white/10 bg-[#0B0F14]/80 backdrop-blur-3xl shadow-2xl overflow-hidden glass p-4 md:p-6 transform-gpu lg:-rotate-2 lg:scale-105 transition-transform duration-700 hover:rotate-0 hover:scale-100 group">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+
+              <div className="rounded-xl overflow-hidden border border-white/5 bg-background/50 relative">
+                {/* Fallback pattern if image is missing */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
                 <img
                   src="/mockup.png"
-                  alt="Financetro Dashboard"
-                  className="w-full rounded-2xl transition-transform duration-1000 group-hover:scale-[1.02]"
+                  alt="Financetro Dashboard Mockup"
+                  className="w-full h-auto relative z-10 rounded-lg shadow-2xl opacity-90 transition-opacity duration-500 group-hover:opacity-100"
+                  onError={(e) => {
+                    // Placeholder if mockup.png doesn't exist
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
+
+                {/* Fallback UI if mockup doesn't exist */}
+                <div className="w-full aspect-[16/9] flex items-center justify-center p-8 z-0 relative">
+                  <div className="w-full h-full border border-white/10 rounded-xl bg-[#0F131A] p-6 flex flex-col gap-6 shadow-inset">
+                    <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                      <div className="flex gap-4 items-center">
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center"><Wallet className="w-5 h-5 text-primary" /></div>
+                        <div><div className="h-4 w-32 bg-white/10 rounded mb-2"></div><div className="h-3 w-20 bg-white/5 rounded"></div></div>
+                      </div>
+                      <div className="w-32 h-10 bg-white/5 rounded-full border border-white/10"></div>
+                    </div>
+                    <div className="flex gap-6 h-[40%]">
+                      <div className="flex-1 bg-white/5 border border-white/10 rounded-xl p-6">
+                        <div className="h-4 w-24 bg-white/10 rounded mb-6"></div>
+                        <div className="h-10 w-48 bg-white/20 rounded"></div>
+                      </div>
+                      <div className="w-[30%] bg-white/5 border border-white/10 rounded-xl"></div>
+                    </div>
+                    <div className="flex-1 bg-white/5 border border-white/10 rounded-xl"></div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+
+            {/* Floating Badges */}
+            <motion.div
+              animate={{ y: [0, -15, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="absolute -right-10 top-20 z-30 hidden lg:flex items-center gap-3 bg-[#11161F]/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl"
+            >
+              <div className="h-12 w-12 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                <TrendingUp className="text-emerald-500 h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-xs text-white/50 font-medium">Monthly Growth</p>
+                <p className="text-lg font-bold text-white">+24.5%</p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              animate={{ y: [0, 20, 0] }}
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+              className="absolute -left-10 bottom-40 z-30 hidden lg:flex items-center gap-3 bg-[#11161F]/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl"
+            >
+              <div className="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <Shield className="text-blue-500 h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-xs text-white/50 font-medium">Data Encryption</p>
+                <p className="text-lg font-bold text-white">Bank Grade</p>
+              </div>
+            </motion.div>
+          </motion.div>
         </section>
 
         {/* Social Proof */}
-        <section className="py-20 border-y border-white/5 bg-white/1">
+        <section className="py-16 border-y border-white/5 bg-white/[0.01] relative z-20">
           <div className="container mx-auto px-6">
-            <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground mb-12">
-              Empowering teams at
+            <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-white/40 mb-10">
+              Trusted by professionals from leading institutions
             </p>
-            <div className="flex flex-wrap justify-center gap-12 md:gap-20 opacity-30 grayscale hover:grayscale-0 transition-all">
-              <span className="text-2xl font-bold">GOLDMAN</span>
-              <span className="text-2xl font-bold">REVOLUT</span>
-              <span className="text-2xl font-bold">STRIPE</span>
-              <span className="text-2xl font-bold">COINBASE</span>
-              <span className="text-2xl font-bold">CHIME</span>
+            <div className="flex flex-wrap justify-center gap-10 md:gap-24 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
+              {['GOLDMAN', 'REVOLUT', 'STRIPE', 'COINBASE', 'CHIME'].map((brand) => (
+                <span key={brand} className="text-2xl font-black tracking-tight hover:text-white transition-colors">{brand}</span>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Features Bento Grid */}
-        <section id="features" className="py-32 relative">
+        <section id="features" className="py-32 relative z-20 bg-[#06080C]">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-20 space-y-4">
-              <h2 className="text-3xl md:text-5xl font-bold">
+            <div className="text-center mb-24 max-w-3xl mx-auto space-y-6">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
                 Engineered for Excellence
               </h2>
-              <p className="text-muted-foreground text-lg">
-                Every tool you need to master your cashflow, unified in one
-                sleek interface.
+              <p className="text-white/50 text-xl font-light">
+                Every tool you need to master your cashflow, unified in an interface that feels like magic.
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-              {/* Feature 1 */}
-              <div className="md:col-span-2 p-8 rounded-3xl bg-card border border-white/5 relative overflow-hidden group hover:border-primary/50 transition-all">
-                <div className="absolute top-0 right-0 p-8 text-primary/10 transition-transform group-hover:scale-125">
-                  <BarChart3 size={120} strokeWidth={1} />
+            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 auto-rows-[300px]">
+              {/* Feature 1 - Large spanning */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="md:col-span-2 lg:col-span-2 row-span-2 p-10 rounded-3xl bg-gradient-to-br from-[#0D1219] to-[#0A0D13] border border-white/5 relative overflow-hidden group hover:border-primary/30 transition-all"
+              >
+                <div className="absolute top-0 right-0 p-10 text-primary/5 transition-transform duration-700 group-hover:scale-110 group-hover:text-primary/10">
+                  <BarChart3 size={200} strokeWidth={0.5} />
                 </div>
-                <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center mb-6">
-                  <TrendingUp className="text-primary h-6 w-6" />
+                <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+                  <Target className="text-primary h-8 w-8" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">
-                  Deep Cashflow Intelligence
-                </h3>
-                <p className="text-muted-foreground leading-relaxed max-w-sm">
-                  Visualize your income and expenses with state-of-the-art
-                  interactive charts. Spot trends before they become problems.
+                <h3 className="text-3xl font-bold mb-4 text-white">Advanced Cashflow Intelligence</h3>
+                <p className="text-white/50 text-lg leading-relaxed max-w-md">
+                  Visualize your income and expenses with bleeding-edge interactive charts. Spot long-term trends before they become problems and simulate future wealth scenarios.
                 </p>
-              </div>
+                <div className="absolute bottom-10 right-10 hidden md:block">
+                  <div className="w-48 h-32 bg-white/5 rounded-xl border border-white/10 backdrop-blur-md p-4 shadow-xl translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                    <div className="flex items-end gap-2 h-full w-full">
+                      {[40, 70, 45, 90, 65, 100].map((h, i) => (
+                        <motion.div
+                          key={i}
+                          className="w-full bg-primary/80 rounded-sm"
+                          initial={{ height: 0 }}
+                          whileInView={{ height: `${h}%` }}
+                          transition={{ duration: 0.5, delay: i * 0.1 }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
 
               {/* Feature 2 */}
-              <div className="p-8 rounded-3xl bg-card border border-white/5 hover:border-blue-500/50 transition-all group">
-                <div className="h-12 w-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-6">
-                  <Clock className="text-blue-500 h-6 w-6" />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="p-8 rounded-3xl bg-gradient-to-b from-[#0D1219] to-[#0A0D13] border border-white/5 hover:border-blue-500/30 transition-all group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 transition-colors duration-500" />
+                <div className="h-14 w-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6">
+                  <Clock className="text-blue-400 h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Auto-Schedules</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Never miss a bill again. Track recurring subscriptions and
-                  income with automated alerts and cashflow forecasting.
+                <h3 className="text-xl font-bold mb-3 text-white">Auto-Schedules</h3>
+                <p className="text-white/50 leading-relaxed">
+                  Never miss a bill. Track recurring subscriptions with automated forecasts.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Feature 3 */}
-              <div className="p-8 rounded-3xl bg-card border border-white/5 hover:border-purple-500/50 transition-all group">
-                <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6">
-                  <Target className="text-purple-500 h-6 w-6" />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="p-8 rounded-3xl bg-gradient-to-b from-[#0D1219] to-[#0A0D13] border border-white/5 hover:border-purple-500/30 transition-all group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-purple-500/0 group-hover:bg-purple-500/5 transition-colors duration-500" />
+                <div className="h-14 w-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6">
+                  <PieChart className="text-purple-400 h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Savings Goals</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Gamify your savings. Set targets for houses, vacations, or
-                  emergencies and watch your progress in real-time.
+                <h3 className="text-xl font-bold mb-3 text-white">Smart Budgeting</h3>
+                <p className="text-white/50 leading-relaxed">
+                  Dynamic spending caps that adapt to your monthly lifestyle changes.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Feature 4 */}
-              <div className="p-8 rounded-3xl bg-[#151921] border border-white/5 hover:border-primary/50 transition-all group">
-                <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center mb-6">
-                  <Zap className="text-primary h-6 w-6" />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="col-span-1 md:col-span-2 lg:col-span-2 p-8 rounded-3xl bg-gradient-to-br from-[#0D1219] to-[#0A0D13] border border-white/5 hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-center"
+              >
+                <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-emerald-500/10 blur-[100px] rounded-full group-hover:bg-emerald-500/20 transition-colors duration-1000" />
+                <div className="relative z-10 flex gap-8 items-center">
+                  <div className="flex-1">
+                    <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
+                      <Lock className="text-emerald-400 h-7 w-7" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 text-white">Owner-Only Security</h3>
+                    <p className="text-white/50 leading-relaxed">
+                      End-to-end data isolation. Your financial records are encrypted and accessible only by you.
+                    </p>
+                  </div>
+                  <div className="hidden sm:flex h-32 w-32 rounded-full border-[8px] border-emerald-500/20 items-center justify-center group-hover:border-emerald-500/40 transition-colors duration-500 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+                    <Lock className="h-12 w-12 text-emerald-500" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold mb-4">CSV Export</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Take your data with you. Export your entire transaction
-                  history to CSV with one click for external analysis.
-                </p>
-              </div>
-
-              {/* Feature 5 */}
-              <div className="md:col-span-2 p-8 rounded-3xl bg-card border border-white/5 hover:border-green-500/50 transition-all group relative overflow-hidden">
-                <div className="absolute -bottom-10 -right-10 text-green-500/5 transition-transform group-hover:scale-110">
-                  <Shield size={200} strokeWidth={1} />
-                </div>
-                <div className="h-12 w-12 rounded-xl bg-green-500/20 flex items-center justify-center mb-6">
-                  <Shield className="text-green-500 h-6 w-6" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4">Owner-Only Security</h3>
-                <p className="text-muted-foreground leading-relaxed max-w-sm">
-                  Your data is your business. We implement end-to-end data
-                  isolation, ensuring only you can ever view your financial
-                  records.
-                </p>
-              </div>
-
-              {/* Feature 6 */}
-              <div className="p-8 rounded-3xl bg-card border border-white/5 hover:border-amber-500/50 transition-all group">
-                <div className="h-12 w-12 rounded-xl bg-amber-500/20 flex items-center justify-center mb-6">
-                  <PieChart className="text-amber-500 h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-bold mb-4">Smart Budgeting</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Set monthly spending caps and get notified as you approach
-                  your limits, helping you stay fiscally responsible.
-                </p>
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Analytics Showcase */}
-        <section id="analytics" className="py-32 bg-white/2">
+        {/* Interactive Stats / Analytics */}
+        <section id="analytics" className="py-32 relative z-20">
+          <div className="absolute inset-0 bg-blue-900/5 mix-blend-screen pointer-events-none" />
           <div className="container mx-auto px-6">
-            <div className="flex flex-col lg:flex-row items-center gap-16">
-              <div className="flex-1 space-y-8">
-                <div className="inline-block px-3 py-1 rounded-lg bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
-                  Metrics
+            <div className="flex flex-col lg:flex-row items-center gap-20">
+              <div className="flex-1 space-y-10">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
+                  <LineChart className="w-4 h-4" />
+                  Deep Analytics
                 </div>
-                <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
-                  Insightful data, <br /> better decisions.
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-white mb-6">
+                  Turn raw data into <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                    predictable wealth.
+                  </span>
                 </h2>
-                <p className="text-muted-foreground text-lg leading-relaxed">
-                  Financetro doesn't just list numbers. It analyzes them. See
-                  your top spending categories, monthly growth, and savings
-                  velocity at a glance. We turn your raw data into a roadmap for
-                  wealth.
+                <p className="text-white/60 text-xl font-light leading-relaxed max-w-lg">
+                  Financetro automatically categorizes your transactions, calculates your savings rate, and projects your net worth trajectory for the next 10 years.
                 </p>
-                <ul className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
                   {[
-                    "Year-over-year trends",
-                    "Category breakdown charts",
-                    "Income vs. Expense ratio",
-                    "Savings milestone tracking",
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
-                      <span className="font-medium">{item}</span>
-                    </li>
+                    "Zero manual entry needed",
+                    "Real-time expense warnings",
+                    "Custom category mapping",
+                    "One-click tax export",
+                  ].map((item, i) => (
+                    <motion.div
+                      key={item}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="flex items-center gap-3"
+                    >
+                      <div className="h-6 w-6 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                      </div>
+                      <span className="font-medium text-white/80">{item}</span>
+                    </motion.div>
                   ))}
-                </ul>
-                <Link href="/register">
-                  <Button className="h-14 px-10 font-bold rounded-2xl mt-4">
-                    Demo Analytics
-                  </Button>
-                </Link>
+                </div>
               </div>
-              <div className="flex-1 relative">
-                <div className="absolute -inset-4 bg-primary/20 blur-3xl opacity-30 rounded-full" />
-                <div className="relative border border-white/10 rounded-3xl overflow-hidden bg-card shadow-2xl skew-y-2 hover:skew-y-0 transition-transform duration-700">
-                  <img src="/mockup.png" alt="Analytics Preview" />
+              <div className="flex-1 relative w-full aspect-square max-w-md mx-auto lg:max-w-none">
+                {/* Abstract Visualization */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                    className="w-[120%] h-[120%] bg-[conic-gradient(at_center,transparent,rgba(59,130,246,0.1),transparent)] rounded-full"
+                  />
+                  <div className="absolute w-full h-full bg-[#06080C] rounded-full flex items-center justify-center p-8 border border-white/5 shadow-2xl glass z-10 scale-[0.8] relative overflow-hidden">
+                    {/* Concentric Circles */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className={`absolute border border-white/5 rounded-full`} style={{ width: `${i * 25}%`, height: `${i * 25}%` }} />
+                      ))}
+                    </div>
+
+                    <div className="relative z-20 text-center">
+                      <p className="text-white/40 text-sm uppercase tracking-widest mb-2 font-bold">Net Worth</p>
+                      <h3 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-6">
+                        $142,890
+                      </h3>
+                      <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-full font-bold">
+                        <TrendingUp className="w-5 h-5" />
+                        +12.4% THIS MONTH
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Pricing / CTA Section */}
-        <section id="pricing" className="py-32 relative overflow-hidden">
-          <div className="absolute bottom-0 left-0 w-full h-[500px] bg-primary/10 blur-[150px] -z-10 opacity-30" />
-          <div className="container mx-auto px-6 text-center">
-            <div className="max-w-3xl mx-auto space-y-10">
-              <h2 className="text-4xl md:text-7xl font-black">
-                Zero cost. <br />
-                Infinite control.
+        {/* Global Access section */}
+        <section className="py-32 relative z-20 border-y border-white/5 bg-[#0A0D13]">
+          <div className="container mx-auto px-6 text-center max-w-4xl">
+            <Globe className="w-16 h-16 text-primary/50 mx-auto mb-8" />
+            <h2 className="text-4xl md:text-5xl font-black mb-6">Built for a Borderless World</h2>
+            <p className="text-xl text-white/50 mb-12">
+              Financetro natively understands over 150 currencies. Travel the world, hold multiple fiat accounts, and see your consolidated net worth in your base currency instantly.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              {['USD', 'EUR', 'GBP', 'INR', 'JPY', 'CAD', 'AUD'].map(curr => (
+                <div key={curr} className="px-6 py-3 rounded-full border border-white/10 bg-white/5 font-bold text-white/70 hover:bg-white/10 hover:text-white transition-colors cursor-default">
+                  {curr}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section id="pricing" className="py-40 relative z-20 overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[800px] h-[800px] bg-primary/20 blur-[200px] rounded-full opacity-40 mix-blend-screen" />
+          </div>
+
+          <div className="container mx-auto px-6 text-center relative z-10">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="max-w-4xl mx-auto space-y-10 glass p-12 md:p-20 rounded-[3rem] border-white/10 bg-[#0B0F14]/60 relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+
+              <h2 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70">
+                Start mastering<br /> your money.
               </h2>
-              <p className="text-xl text-muted-foreground">
-                Financetro is currently 100% free while in beta. Join thousands
-                of users who are already mastering their finances.
+              <p className="text-xl text-white/60 max-w-2xl mx-auto pb-4 font-light">
+                Join thousands of professionals who have already taken control. Financetro is currently entirely free during our public beta.
               </p>
-              <div className="pt-6">
-                <Link href="/register">
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Link href="/register" passHref>
                   <Button
                     size="lg"
-                    className="h-16 px-12 text-xl font-bold rounded-2xl shadow-xl shadow-primary/30"
+                    className="h-16 px-12 text-lg font-bold rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] transition-all hover:-translate-y-1"
                   >
-                    Create Your Account
-                    <ArrowRight className="ml-2 h-6 w-6" />
+                    Create Free Account
                   </Button>
                 </Link>
-                <p className="mt-6 text-sm text-muted-foreground">
-                  No credit card required • GDPR Compliant
-                </p>
               </div>
-            </div>
+              <p className="text-sm text-white/40 pt-4 flex items-center justify-center gap-2">
+                <Shield className="w-4 h-4" /> No credit card required. Cancel anytime.
+              </p>
+            </motion.div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="py-20 border-t border-white/5 bg-background relative overflow-hidden">
+      <footer className="py-20 border-t border-white/5 bg-[#06080C] relative z-20">
         <div className="container mx-auto px-6">
-          <div className="grid gap-12 md:grid-cols-4 mb-20">
-            <div className="col-span-2 space-y-6">
+          <div className="grid gap-12 md:grid-cols-5 mb-20">
+            <div className="col-span-2 space-y-8">
               <Link className="flex items-center gap-2" href="/">
-                <div className="p-2 bg-primary/20 rounded-lg">
-                  <Wallet className="h-6 w-6 text-primary" />
+                <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
+                  <Command className="h-6 w-6 text-primary" />
                 </div>
-                <span className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-primary to-orange-400">
+                <span className="text-2xl font-black tracking-tight text-white">
                   Financetro
                 </span>
               </Link>
-              <p className="text-muted-foreground max-w-sm">
-                State-of-the-art financial management built for modern
-                professionals. Precision tracking, deep analytics, and
-                uncompromising security.
+              <p className="text-white/50 max-w-sm text-sm leading-relaxed">
+                The financial command center built for the modern professional. Deep analytics, military-grade security, and uncompromising design.
               </p>
               <div className="flex gap-4">
                 {[Globe, Star, Layout].map((Icon, i) => (
                   <div
                     key={i}
-                    className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer"
+                    className="h-10 w-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
                   >
-                    <Icon className="h-5 w-5 text-muted-foreground hover:text-primary" />
+                    <Icon className="h-4 w-4 text-white/60 hover:text-white" />
                   </div>
                 ))}
               </div>
             </div>
+
             <div>
-              <h4 className="font-bold mb-6 uppercase text-xs tracking-widest">
-                Platform
-              </h4>
+              <h4 className="font-bold mb-6 text-white/90 text-sm">Product</h4>
               <nav className="flex flex-col gap-4">
-                <Link
-                  className="text-sm text-muted-foreground hover:text-white transition-colors"
-                  href="#"
-                >
-                  Features
-                </Link>
-                <Link
-                  className="text-sm text-muted-foreground hover:text-white transition-colors"
-                  href="#"
-                >
-                  Security
-                </Link>
-                <Link
-                  className="text-sm text-muted-foreground hover:text-white transition-colors"
-                  href="#"
-                >
-                  Pricing
-                </Link>
-                <Link
-                  className="text-sm text-muted-foreground hover:text-white transition-colors"
-                  href="#"
-                >
-                  Mobile App
-                </Link>
+                {["Features", "Security", "Analytics", "Integrations", "Pricing"].map(item => (
+                  <Link key={item} href="#" className="text-sm text-white/50 hover:text-primary transition-colors">
+                    {item}
+                  </Link>
+                ))}
               </nav>
             </div>
+
             <div>
-              <h4 className="font-bold mb-6 uppercase text-xs tracking-widest">
-                Resources
-              </h4>
+              <h4 className="font-bold mb-6 text-white/90 text-sm">Resources</h4>
               <nav className="flex flex-col gap-4">
-                <Link
-                  className="text-sm text-muted-foreground hover:text-white transition-colors"
-                  href="#"
-                >
-                  Financial Guide
-                </Link>
-                <Link
-                  className="text-sm text-muted-foreground hover:text-white transition-colors"
-                  href="#"
-                >
-                  API Docs
-                </Link>
-                <Link
-                  className="text-sm text-muted-foreground hover:text-white transition-colors"
-                  href="#"
-                >
-                  Support
-                </Link>
+                {["Documentation", "API Reference", "Blog", "Community", "Help Center"].map(item => (
+                  <Link key={item} href="#" className="text-sm text-white/50 hover:text-primary transition-colors">
+                    {item}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
+            <div>
+              <h4 className="font-bold mb-6 text-white/90 text-sm">Company</h4>
+               <nav className="flex flex-col gap-4">
+                {[
+                  { name: "About", path: "/about" },
+                  { name: "Careers", path: "#" },
+                  { name: "Privacy", path: "/privacy" },
+                  { name: "Terms", path: "/terms" }
+                ].map(item => (
+                  <Link key={item.name} href={item.path} className="text-sm text-white/50 hover:text-primary transition-colors">
+                    {item.name}
+                  </Link>
+                ))}
               </nav>
             </div>
           </div>
+
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-white/5">
-            <p className="text-sm text-muted-foreground">
-              © {currentYear} Financetro Labs. All rights reserved.
+            <p className="text-sm text-white/40">
+              © {currentYear} Financetro. All rights reserved. Do not share your financial data.
             </p>
-            <div className="flex gap-8 text-sm text-muted-foreground">
-              <Link className="hover:text-white transition-colors" href="#">
-                Terms
-              </Link>
-              <Link className="hover:text-white transition-colors" href="#">
-                Privacy
-              </Link>
-              <Link className="hover:text-white transition-colors" href="#">
-                Cookies
-              </Link>
+            <div className="flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mt-1.5" />
+              <span className="text-sm text-white/60 font-medium">Systems are operational</span>
             </div>
           </div>
         </div>
